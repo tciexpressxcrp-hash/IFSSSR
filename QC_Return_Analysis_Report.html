@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Return QC — Executive Analysis Report | Seychelles Distribution</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;font-size:14px;line-height:1.6}
+  .wrapper{max-width:1280px;margin:0 auto;padding:24px}
+
+  /* Header */
+  .report-header{background:linear-gradient(135deg,#0f3460 0%,#16213e 50%,#0f3460 100%);color:#fff;border-radius:12px;padding:40px;margin-bottom:28px;position:relative;overflow:hidden}
+  .report-header::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05)}
+  .report-header::after{content:'';position:absolute;bottom:-40px;left:200px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,0.03)}
+  .report-header h1{font-size:28px;font-weight:700;margin-bottom:6px;letter-spacing:-0.5px}
+  .report-header .subtitle{font-size:14px;opacity:0.8;margin-bottom:20px}
+  .header-meta{display:flex;gap:32px;flex-wrap:wrap}
+  .header-meta span{font-size:12px;opacity:0.75}
+  .header-meta strong{color:#e94560;font-size:13px}
+  .badge-critical{background:#e94560;color:#fff;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;margin-left:10px}
+  .badge-warning{background:#f5a623;color:#fff;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;margin-left:10px}
+
+  /* Section */
+  .section{background:#fff;border-radius:12px;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+  .section-header{display:flex;align-items:center;gap:10px;margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid #f0f2f5}
+  .section-num{background:#0f3460;color:#fff;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+  .section-title{font-size:18px;font-weight:700;color:#0f3460}
+  .section-sub{font-size:12px;color:#888;margin-left:auto}
+
+  /* KPI Grid */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+  .kpi-card{background:#f8f9fc;border-radius:10px;padding:18px;border-left:4px solid #0f3460;position:relative}
+  .kpi-card.danger{border-left-color:#e94560}
+  .kpi-card.warning{border-left-color:#f5a623}
+  .kpi-card.success{border-left-color:#27ae60}
+  .kpi-card.info{border-left-color:#3498db}
+  .kpi-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+  .kpi-value{font-size:22px;font-weight:700;color:#0f3460;margin-bottom:2px}
+  .kpi-value.danger{color:#e94560}
+  .kpi-sub{font-size:11px;color:#888}
+  .kpi-trend{font-size:11px;margin-top:4px}
+  .trend-up{color:#e94560}
+  .trend-down{color:#27ae60}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:#0f3460;color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:12px}
+  td{padding:9px 12px;border-bottom:1px solid #f0f2f5}
+  tr:hover td{background:#f8f9fc}
+  tr:last-child td{border-bottom:none}
+  .rank-1{color:#e94560;font-weight:700}
+  .rank-2{color:#f5a623;font-weight:700}
+  .rank-3{color:#f39c12;font-weight:600}
+
+  /* Progress bars */
+  .progress-bar{height:6px;background:#e8ecf0;border-radius:3px;overflow:hidden;margin-top:4px}
+  .progress-fill{height:100%;border-radius:3px;transition:width 0.3s}
+  .fill-danger{background:#e94560}
+  .fill-warning{background:#f5a623}
+  .fill-success{background:#27ae60}
+  .fill-info{background:#3498db}
+  .fill-blue{background:#0f3460}
+
+  /* Risk badges */
+  .risk-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+  .risk-critical{background:#fde8ec;color:#c0392b}
+  .risk-high{background:#fef0e6;color:#e67e22}
+  .risk-moderate{background:#fefce6;color:#f39c12}
+  .risk-good{background:#e8f5e9;color:#27ae60}
+  .risk-excellent{background:#e8f0fe;color:#1a73e8}
+
+  /* Charts */
+  .chart-container{position:relative;width:100%}
+  .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+  .chart-single{position:relative;width:100%}
+
+  /* Insights */
+  .insight-box{background:#f0f4ff;border-left:4px solid #3498db;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px}
+  .insight-box.critical{background:#fff0f3;border-left-color:#e94560}
+  .insight-box.warning{background:#fff8e6;border-left-color:#f5a623}
+  .insight-box.success{background:#f0fff4;border-left-color:#27ae60}
+  .insight-title{font-weight:700;font-size:12px;margin-bottom:4px;color:#0f3460}
+  .insight-box.critical .insight-title{color:#c0392b}
+  .insight-box.warning .insight-title{color:#d68910}
+  .insight-text{font-size:12px;color:#555;line-height:1.5}
+
+  /* Recommendations */
+  .rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .rec-card{border-radius:8px;padding:16px;border:1px solid #e8ecf0}
+  .rec-card.priority-1{border-top:3px solid #e94560}
+  .rec-card.priority-2{border-top:3px solid #f5a623}
+  .rec-card.priority-3{border-top:3px solid #3498db}
+  .rec-priority{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:6px}
+  .priority-1 .rec-priority{color:#e94560}
+  .priority-2 .rec-priority{color:#f5a623}
+  .priority-3 .rec-priority{color:#3498db}
+  .rec-title{font-size:13px;font-weight:700;margin-bottom:6px;color:#0f3460}
+  .rec-desc{font-size:12px;color:#555;line-height:1.5}
+  .rec-impact{font-size:11px;margin-top:8px;color:#27ae60;font-weight:600}
+
+  /* Roadmap */
+  .roadmap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .roadmap-card{border-radius:10px;padding:20px}
+  .roadmap-card.d30{background:#fff0f3;border:1px solid #f5c6cd}
+  .roadmap-card.d60{background:#fff8e6;border:1px solid #fde8c0}
+  .roadmap-card.d90{background:#f0f4ff;border:1px solid #c3d2f0}
+  .roadmap-title{font-size:14px;font-weight:700;margin-bottom:14px}
+  .d30 .roadmap-title{color:#c0392b}
+  .d60 .roadmap-title{color:#d68910}
+  .d90 .roadmap-title{color:#1a73e8}
+  .roadmap-item{font-size:12px;color:#555;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06);display:flex;align-items:flex-start;gap:8px}
+  .roadmap-item:last-child{border-bottom:none}
+  .roadmap-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+  .d30 .roadmap-dot{background:#c0392b}
+  .d60 .roadmap-dot{background:#d68910}
+  .d90 .roadmap-dot{background:#1a73e8}
+
+  /* DAX */
+  .dax-block{background:#1e1e2e;border-radius:8px;padding:16px;margin-bottom:12px;font-family:'Courier New',monospace;font-size:12px;color:#a8d8ea;line-height:1.7;overflow-x:auto}
+  .dax-name{color:#e94560;font-weight:700;font-size:13px;margin-bottom:8px}
+  .dax-keyword{color:#c792ea}
+  .dax-func{color:#82aaff}
+  .dax-string{color:#c3e88d}
+  .dax-comment{color:#546e7a;font-style:italic}
+
+  /* Power BI Blueprint */
+  .pbi-page{border:1px solid #e0e0e0;border-radius:10px;padding:20px;margin-bottom:16px;background:#fafafa}
+  .pbi-page-title{background:#0f3460;color:#fff;display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px}
+  .pbi-visual-grid{display:grid;gap:10px}
+  .pbi-visual{background:#fff;border:1px dashed #c0c0c0;border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .pbi-icon{font-size:18px}
+  .pbi-visual-name{font-size:12px;font-weight:700;color:#0f3460}
+  .pbi-visual-desc{font-size:11px;color:#777}
+
+  /* Risk matrix */
+  .risk-matrix{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .risk-cell{border-radius:8px;padding:18px;border:1px solid transparent}
+  .risk-hh{background:#fde8ec;border-color:#f5c6cd}
+  .risk-hl{background:#fff8e6;border-color:#fde8c0}
+  .risk-lh{background:#fef0e6;border-color:#fdd8b5}
+  .risk-ll{background:#f0fff4;border-color:#b7e4c7}
+  .risk-cell-title{font-size:13px;font-weight:700;margin-bottom:8px}
+  .risk-hh .risk-cell-title{color:#c0392b}
+  .risk-hl .risk-cell-title{color:#d68910}
+  .risk-lh .risk-cell-title{color:#e67e22}
+  .risk-ll .risk-cell-title{color:#27ae60}
+  .risk-item{font-size:11px;color:#555;padding:2px 0}
+
+  /* Legend */
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#555}
+  .legend-dot{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+
+  /* Nav */
+  .nav-toc{background:#0f3460;border-radius:10px;padding:20px;margin-bottom:24px;color:#fff}
+  .nav-toc h3{font-size:14px;font-weight:700;margin-bottom:12px;opacity:0.85;text-transform:uppercase;letter-spacing:0.5px}
+  .nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+  .nav-item{background:rgba(255,255,255,0.1);border-radius:6px;padding:8px 12px;font-size:12px;cursor:pointer;transition:background 0.2s}
+  .nav-item:hover{background:rgba(255,255,255,0.2)}
+  .nav-item a{color:#fff;text-decoration:none;display:flex;align-items:center;gap:6px}
+
+  /* Tabs for DAX */
+  .tab-bar{display:flex;gap:4px;margin-bottom:0;border-bottom:2px solid #e0e0e0}
+  .tab-btn{padding:8px 16px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px}
+  .tab-btn.active{color:#0f3460;border-bottom-color:#0f3460}
+
+  /* Two column layout */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+  /* Stock aging */
+  .aging-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .aging-label{width:60px;font-size:12px;color:#555;flex-shrink:0}
+  .aging-track{flex:1;height:20px;background:#e8ecf0;border-radius:4px;overflow:hidden}
+  .aging-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:10px;color:#fff;font-weight:700}
+  .aging-count{width:60px;font-size:12px;color:#555;text-align:right}
+
+  @media(max-width:768px){
+    .chart-row,.two-col,.three-col,.rec-grid,.roadmap-grid,.risk-matrix{grid-template-columns:1fr}
+    .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- HEADER -->
+<div class="report-header">
+  <div style="position:relative;z-index:1">
+    <div style="font-size:11px;opacity:0.7;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Seychelles Distribution Operations — Quality Control Intelligence</div>
+    <h1 class="report-header-h1" style="font-size:28px;font-weight:700;margin-bottom:6px">Sales Return & Quality Control<br>Executive Analysis Report</h1>
+    <div class="subtitle">Period: January 2026 – April 2026 &nbsp;|&nbsp; 4,250 Line Transactions &nbsp;|&nbsp; SCR 5.29M Total Return Value</div>
+    <div class="header-meta">
+      <span>Prepared by: <strong>TAJENDER</strong></span>
+      <span>Report Date: <strong>May 2026</strong></span>
+      <span>Classification: <strong>Management Confidential</strong></span>
+      <span style="background:#e94560;border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700">⚠ CRITICAL: Returns surged 72% in 4 months</span>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="nav-toc">
+  <h3>Report Navigation</h3>
+  <div class="nav-grid">
+    <div class="nav-item"><a href="#exec">① Executive Summary</a></div>
+    <div class="nav-item"><a href="#dq">② Data Quality Audit</a></div>
+    <div class="nav-item"><a href="#kpi">③ KPI Framework</a></div>
+    <div class="nav-item"><a href="#trend">④ Monthly Trend Analysis</a></div>
+    <div class="nav-item"><a href="#txn">⑤ Transaction Type Analysis</a></div>
+    <div class="nav-item"><a href="#location">⑥ Location Analysis</a></div>
+    <div class="nav-item"><a href="#salesman">⑦ Salesman Performance</a></div>
+    <div class="nav-item"><a href="#reason">⑧ Reason Analysis (Pareto)</a></div>
+    <div class="nav-item"><a href="#brand">⑨ Brand & SKU Analysis</a></div>
+    <div class="nav-item"><a href="#financial">⑩ Financial Impact</a></div>
+    <div class="nav-item"><a href="#aging">⑪ Stock Aging Analysis</a></div>
+    <div class="nav-item"><a href="#riskmatrix">⑫ Risk Matrix</a></div>
+    <div class="nav-item"><a href="#controls">⑬ Business Controls</a></div>
+    <div class="nav-item"><a href="#pbi">⑭ Power BI Dashboard Blueprint</a></div>
+    <div class="nav-item"><a href="#dax">⑮ DAX Measures</a></div>
+    <div class="nav-item"><a href="#roadmap">⑯ 30-60-90 Day Action Plan</a></div>
+  </div>
+</div>
+
+<!-- 1. EXECUTIVE SUMMARY -->
+<div class="section" id="exec">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">Executive Summary</div>
+    <div class="section-sub">Jan–Apr 2026 | Seychelles Distribution</div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card danger">
+      <div class="kpi-label">Total Return Lines</div>
+      <div class="kpi-value danger">4,250</div>
+      <div class="kpi-sub">Transactions processed</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Total Return Value</div>
+      <div class="kpi-value danger">SCR 5.29M</div>
+      <div class="kpi-sub">5,286,687 exact</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Avg Return Value</div>
+      <div class="kpi-value" style="color:#d68910">SCR 1,244</div>
+      <div class="kpi-sub">Per transaction line</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Peak Month</div>
+      <div class="kpi-value" style="color:#d68910">March 2026</div>
+      <div class="kpi-sub">SCR 1.75M — highest loss</div>
+    </div>
+    <div class="kpi-card info">
+      <div class="kpi-label">Non-Sellable Stock</div>
+      <div class="kpi-value" style="color:#3498db">1.7%</div>
+      <div class="kpi-sub">72 of 4,250 lines</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Top Loss Reason</div>
+      <div class="kpi-value danger" style="font-size:14px">Customer Cancel</div>
+      <div class="kpi-sub">44.5% of total value</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Worst Salesman</div>
+      <div class="kpi-value danger" style="font-size:16px">KRISHNA</div>
+      <div class="kpi-sub">SCR 937,993 — 17.7% of total</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Top Affected Brand</div>
+      <div class="kpi-value" style="color:#d68910;font-size:16px">LAR</div>
+      <div class="kpi-sub">SCR 543,600 — highest value</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Top Return Customer</div>
+      <div class="kpi-value" style="color:#d68910;font-size:12px;line-height:1.3">ALPHONSE ISLAND</div>
+      <div class="kpi-sub">SCR 930,668 — 95 lines</div>
+    </div>
+    <div class="kpi-card info">
+      <div class="kpi-label">Avg Stock Age</div>
+      <div class="kpi-value" style="color:#3498db">9.0 days</div>
+      <div class="kpi-sub">Mean days with customer</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Monthly Growth</div>
+      <div class="kpi-value danger">+72%</div>
+      <div class="kpi-sub">Jan to Apr volume increase</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Dominant Txn Type</div>
+      <div class="kpi-value" style="color:#27ae60;font-size:16px">SSR 91.4%</div>
+      <div class="kpi-sub">Standard sales return</div>
+    </div>
+  </div>
+
+  <div class="insight-box critical">
+    <div class="insight-title">🚨 CRITICAL FINDING — Returns growing at alarming rate</div>
+    <div class="insight-text">Return volume has increased from 766 lines in January to 1,319 lines in April — a 72% increase in just 4 months. The top 5 reasons account for 80.2% of total financial loss, confirming a highly concentrated, actionable problem set. Three salesmen (KRISHNA, SUDHAKAR, SHAMIL WEDASINGHE) alone account for SCR 2.12M — 40.1% of all losses.</div>
+  </div>
+  <div class="insight-box warning">
+    <div class="insight-title">⚠ OPERATIONAL ALERT — Customer cancellations dominate at 44.5%</div>
+    <div class="insight-text">"Not Required / Cancelled By The Customer" is the single largest reason (1,587 cases, SCR 2.35M). This indicates systematic failures in demand confirmation, LPO validation, and order booking processes. This is 100% preventable with proper controls.</div>
+  </div>
+  <div class="insight-box warning">
+    <div class="insight-title">⚠ SYSTEM ALERT — EDP errors cost SCR 638,537</div>
+    <div class="insight-text">EDP-related issues (wrong processes, wrong orders) account for SCR 638,537 (12.1%) — the 3rd largest category. This is an internal process failure requiring immediate system-level corrective action and staff retraining.</div>
+  </div>
+</div>
+
+<!-- 2. DATA QUALITY AUDIT -->
+<div class="section" id="dq">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Data Quality Audit</div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+    <div class="kpi-card success">
+      <div class="kpi-label">Data Quality Score</div>
+      <div class="kpi-value" style="color:#27ae60">74 / 100</div>
+      <div class="kpi-sub">Moderate — issues exist</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Missing Reasons</div>
+      <div class="kpi-value" style="color:#d68910">127</div>
+      <div class="kpi-sub">3.0% of transactions</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Missing Barcodes</div>
+      <div class="kpi-value" style="color:#d68910">1,226</div>
+      <div class="kpi-sub">28.8% of items</div>
+    </div>
+    <div class="kpi-card info">
+      <div class="kpi-label">Zero-Value Returns</div>
+      <div class="kpi-value" style="color:#3498db">24</div>
+      <div class="kpi-sub">Needs investigation</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Issue</th><th>Count</th><th>Severity</th><th>Business Impact</th><th>Recommended Fix</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Missing Reason Codes</strong></td>
+        <td>127 rows</td>
+        <td><span class="risk-badge risk-high">HIGH</span></td>
+        <td>Cannot classify returns; distorts Pareto analysis</td>
+        <td>Make Reason Code mandatory in transaction entry system; retrospectively classify via EDP review</td>
+      </tr>
+      <tr>
+        <td><strong>Missing Barcodes</strong></td>
+        <td>1,226 rows (28.8%)</td>
+        <td><span class="risk-badge risk-moderate">MEDIUM</span></td>
+        <td>Cannot trace stock back to batch/lot; limits QC traceability</td>
+        <td>Mandate barcode scan at return receipt; system to block processing without barcode</td>
+      </tr>
+      <tr>
+        <td><strong>Missing Stk Days With Customer</strong></td>
+        <td>86 rows</td>
+        <td><span class="risk-badge risk-moderate">MEDIUM</span></td>
+        <td>Stock aging analysis incomplete; cannot identify chronic aging</td>
+        <td>Calculate from Return Dt – Inv Dt where missing; automate in system</td>
+      </tr>
+      <tr>
+        <td><strong>Zero Return Values</strong></td>
+        <td>24 transactions</td>
+        <td><span class="risk-badge risk-high">HIGH</span></td>
+        <td>Financial reconciliation errors; possible data entry failures</td>
+        <td>Force value entry; flag zero-value returns for supervisor approval</td>
+      </tr>
+      <tr>
+        <td><strong>Missing Annotation / Co Ord Name</strong></td>
+        <td>4,072 / 4,187 rows</td>
+        <td><span class="risk-badge risk-good">LOW</span></td>
+        <td>Limited traceability to coordinator; reduces accountability</td>
+        <td>Enable coordinator tagging in return workflow</td>
+      </tr>
+      <tr>
+        <td><strong>Duplicate Doc Numbers</strong></td>
+        <td>1,662 entries</td>
+        <td><span class="risk-badge risk-good">NOTE</span></td>
+        <td>Expected — multi-line documents; not true duplicates</td>
+        <td>Confirm via unique Txn No + Item Code composite key; add validation check</td>
+      </tr>
+      <tr>
+        <td><strong>Negative Quantities</strong></td>
+        <td>0</td>
+        <td><span class="risk-badge risk-excellent">CLEAN</span></td>
+        <td>No impact</td>
+        <td>No action required</td>
+      </tr>
+      <tr>
+        <td><strong>Return Value Outlier (Max)</strong></td>
+        <td>SCR 377,475 (single line)</td>
+        <td><span class="risk-badge risk-high">HIGH</span></td>
+        <td>Distorts averages significantly; may be data error</td>
+        <td>Investigate all returns above SCR 50,000; require dual approval for large returns</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box" style="margin-top:16px">
+    <div class="insight-title">📊 Data Quality Scoring Breakdown</div>
+    <div class="insight-text">Completeness: 78/100 | Accuracy: 82/100 | Consistency: 68/100 | Timeliness: 100/100. Primary improvement area is Reason Code completeness and Barcode capture, which directly impacts downstream analytics quality.</div>
+  </div>
+</div>
+
+<!-- 3. KPI FRAMEWORK -->
+<div class="section" id="kpi">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">KPI Framework & Definitions</div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>#</th><th>KPI Name</th><th>Current Value</th><th>Formula</th><th>Business Meaning</th><th>Target</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Total Return Lines</strong></td><td>4,250</td><td>COUNT(Doc No)</td><td>Volume of return transactions processed</td><td>&lt;2,500/qtr</td></tr>
+      <tr><td>2</td><td><strong>Total Return Value</strong></td><td>SCR 5,286,687</td><td>SUM(Returnvalue)</td><td>Financial magnitude of product returns</td><td>Reduce 20% YoY</td></tr>
+      <tr><td>3</td><td><strong>Avg Return Value</strong></td><td>SCR 1,244</td><td>SUM(Returnvalue)/COUNT(Lines)</td><td>Average value exposure per return event</td><td>&lt;SCR 800</td></tr>
+      <tr><td>4</td><td><strong>Monthly Return Growth %</strong></td><td>+72% (Jan→Apr)</td><td>(Month_n – Month_1)/Month_1</td><td>Speed of return volume acceleration — critical leading indicator</td><td>&lt;5% MoM</td></tr>
+      <tr><td>5</td><td><strong>Salesman Return Rate</strong></td><td>Varies 61–445 lines</td><td>SM Returns/Total Returns × 100</td><td>Individual salesman's contribution to returns vs portfolio</td><td>&lt;8%/salesman</td></tr>
+      <tr><td>6</td><td><strong>Location Return Share</strong></td><td>MAH:89.8% | PRA:7.1%</td><td>Location Returns/Total × 100</td><td>Geographic concentration of return problem</td><td>Proportional to sales</td></tr>
+      <tr><td>7</td><td><strong>Sellable vs Non-Sellable %</strong></td><td>98.3% / 1.7%</td><td>Y_Count/Total | N_Count/Total</td><td>Proportion of returns that can be re-stocked vs written off</td><td>Non-sellable &lt;1%</td></tr>
+      <tr><td>8</td><td><strong>Customer Cancellation %</strong></td><td>44.5% by value</td><td>Cancel Returnvalue/Total × 100</td><td>Largest controllable driver — demand & confirmation failure</td><td>&lt;20% of returns</td></tr>
+      <tr><td>9</td><td><strong>Sales Staff Error Rate</strong></td><td>12.4% by value</td><td>WrongOrder Value/Total × 100</td><td>Order booking accuracy — training effectiveness KPI</td><td>&lt;5%</td></tr>
+      <tr><td>10</td><td><strong>EDP Error Rate</strong></td><td>12.1% by value</td><td>EDP Error Value/Total × 100</td><td>System/process accuracy — IT & ops efficiency</td><td>&lt;2%</td></tr>
+      <tr><td>11</td><td><strong>Stock Aging Average</strong></td><td>9.03 days</td><td>AVG(Stk Days With Customer)</td><td>Average time stock sits before return — freshness & demand quality</td><td>&lt;7 days</td></tr>
+      <tr><td>12</td><td><strong>60+ Day Aging %</strong></td><td>2.6% (107 lines)</td><td>60+Day Lines/Total Lines</td><td>Chronic aging — expired/slow-moving stock risk</td><td>&lt;1%</td></tr>
+      <tr><td>13</td><td><strong>Top 5 Reason Concentration</strong></td><td>80.2%</td><td>Top5 Reasons Value/Total × 100</td><td>Pareto concentration — determines focus of corrective actions</td><td>&lt;60% (better distribution)</td></tr>
+      <tr><td>14</td><td><strong>Damage Return %</strong></td><td>2.6% by count</td><td>Damage Lines/Total Lines × 100</td><td>Supply chain and packaging integrity</td><td>&lt;1%</td></tr>
+      <tr><td>15</td><td><strong>Near Expiry Return %</strong></td><td>2.0% by count</td><td>NearExpiry Lines/Total × 100</td><td>Forecasting & rotation effectiveness</td><td>&lt;0.5%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 4. MONTHLY TREND -->
+<div class="section" id="trend">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Monthly Trend Analysis</div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card info">
+      <div class="kpi-label">January 2026</div>
+      <div class="kpi-value" style="color:#3498db">766 lines</div>
+      <div class="kpi-sub">SCR 1,025,435</div>
+      <div class="kpi-trend">Baseline month</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">February 2026</div>
+      <div class="kpi-value" style="color:#d68910">1,075 lines</div>
+      <div class="kpi-sub">SCR 1,163,968</div>
+      <div class="kpi-trend trend-up">↑ +40.3% volume | +13.5% value</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">March 2026 ⚡ PEAK</div>
+      <div class="kpi-value danger">1,090 lines</div>
+      <div class="kpi-sub">SCR 1,754,834</div>
+      <div class="kpi-trend trend-up">↑ +1.4% volume | +50.8% VALUE SPIKE</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">April 2026</div>
+      <div class="kpi-value danger">1,319 lines</div>
+      <div class="kpi-sub">SCR 1,342,450</div>
+      <div class="kpi-trend trend-up">↑ +21.0% volume | −23.5% value</div>
+    </div>
+  </div>
+
+  <div class="chart-row" style="margin-top:20px">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Monthly Return Volume (Lines)</div>
+      <div class="chart-container" style="height:240px"><canvas id="monthVolumeChart" role="img" aria-label="Bar chart showing monthly return volume Jan-Apr 2026">Jan:766 Feb:1075 Mar:1090 Apr:1319</canvas></div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Monthly Return Value (SCR)</div>
+      <div class="chart-container" style="height:240px"><canvas id="monthValueChart" role="img" aria-label="Bar chart showing monthly return value Jan-Apr 2026">Jan:1025435 Feb:1163968 Mar:1754834 Apr:1342450</canvas></div>
+    </div>
+  </div>
+
+  <div class="insight-box critical" style="margin-top:16px">
+    <div class="insight-title">🔴 March 2026 Anomaly — SCR 1.75M spike</div>
+    <div class="insight-text">March 2026 shows a 50.8% value spike (SCR 1.75M) despite only a 1.4% volume increase vs February. This means high-value items were returned — investigation points to large hotel/resort accounts (ALPHONSE ISLAND, KEMPINSKI) and bulk frozen protein returns (LAR, WAGSTAFF, ANGLO brands). A specific root-cause investigation for March is recommended.</div>
+  </div>
+</div>
+
+<!-- 5. TRANSACTION TYPE -->
+<div class="section" id="txn">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Transaction Type Analysis</div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <table>
+        <thead>
+          <tr><th>Txn Code</th><th>Description</th><th>Count</th><th>Value (SCR)</th><th>% Count</th><th>% Value</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:#0f3460">SSR</strong></td>
+            <td>Standard Sales Return</td>
+            <td>3,883</td>
+            <td>4,885,711</td>
+            <td>91.4%</td>
+            <td>92.4%</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#f5a623">SPSSR</strong></td>
+            <td>Special/Promotion Return</td>
+            <td>295</td>
+            <td>334,313</td>
+            <td>6.9%</td>
+            <td>6.3%</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#27ae60">SSRV</strong></td>
+            <td>Return Value Adjustment</td>
+            <td>72</td>
+            <td>66,662</td>
+            <td>1.7%</td>
+            <td>1.3%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="insight-box" style="margin-top:16px">
+        <div class="insight-title">📌 SSR dominates — but SPSSR needs attention</div>
+        <div class="insight-text">SSR (standard returns) drives 92.4% of value — this is the primary focus area. However, SPSSR (special/promotional returns) at 6.9% volume indicates promotional pushes may be generating returns when stock is unsold. Promotional return policies should be reviewed. SSRV adjustments at 1.7% suggest pricing/value corrections occurring post-return.</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Transaction Type by Month</div>
+      <div class="chart-container" style="height:200px"><canvas id="txnChart" role="img" aria-label="Stacked bar chart of transaction types by month">SSR dominates all months</canvas></div>
+      <div class="legend" style="margin-top:10px">
+        <div class="legend-item"><div class="legend-dot" style="background:#0f3460"></div>SSR</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f5a623"></div>SPSSR</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#27ae60"></div>SSRV</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. LOCATION ANALYSIS -->
+<div class="section" id="location">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Location Analysis</div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi-card danger">
+      <div class="kpi-label">MAH (Mahé Island) 🔴</div>
+      <div class="kpi-value danger">3,816 lines</div>
+      <div class="kpi-sub">SCR 4,877,747 — 92.3% of total</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">PRA (Praslin Island) 🟡</div>
+      <div class="kpi-value" style="color:#d68910">300 lines</div>
+      <div class="kpi-sub">SCR 326,569 — 6.2% of total</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">LAD (La Digue) 🟢</div>
+      <div class="kpi-value" style="color:#27ae60">134 lines</div>
+      <div class="kpi-sub">SCR 82,370 — 1.6% of total</div>
+    </div>
+  </div>
+
+  <div class="chart-row" style="margin-top:16px">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Location Return Share</div>
+      <div class="chart-container" style="height:220px"><canvas id="locationChart" role="img" aria-label="Donut chart showing location distribution MAH 89.8%, PRA 7.1%, LAD 3.2%">MAH 89.8% PRA 7.1% LAD 3.2%</canvas></div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Location-Specific Insights</div>
+      <div class="insight-box critical">
+        <div class="insight-title">MAH (Mahé) — Priority Action Required</div>
+        <div class="insight-text">Mahé accounts for 89.8% of all returns by count and 92.3% by value. The disproportionate concentration demands immediate focus. Top drivers: customer cancellations and salesman order errors. Hotel and resort accounts (ALPHONSE ISLAND, KEMPINSKI, SAVOY) are the highest value return customers in Mahé.</div>
+      </div>
+      <div class="insight-box warning">
+        <div class="insight-title">PRA (Praslin) — Dedicated Category "Praslin Customer RTN"</div>
+        <div class="insight-text">83 returns are categorised specifically as "Praslin Customer RTN" (Reason R022), suggesting a structural Praslin-specific issue — possibly related to logistics lead times causing demand changes before delivery. Freight costs amplify the financial damage of returns from outer islands.</div>
+      </div>
+      <div class="insight-box success">
+        <div class="insight-title">LAD (La Digue) — Best Performing Location</div>
+        <div class="insight-text">La Digue shows the lowest return rate at 1.6% of total. Avg return value (SCR 615) is significantly lower than MAH (SCR 1,278). Best practices from La Digue operations should be studied and replicated.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. SALESMAN PERFORMANCE -->
+<div class="section" id="salesman">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Salesman Performance Analysis</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Rank</th><th>Salesman</th><th>Lines</th><th>Return Value (SCR)</th><th>Avg Value/Line</th><th>% of Total Value</th><th>Risk Classification</th><th>Action Required</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="rank-1">1</td>
+        <td><strong>KRISHNA</strong></td>
+        <td>107</td>
+        <td><strong style="color:#c0392b">937,993</strong></td>
+        <td>8,766</td>
+        <td>17.7%</td>
+        <td><span class="risk-badge risk-critical">CRITICAL</span></td>
+        <td>Immediate management review; assign to low-value accounts temporarily</td>
+      </tr>
+      <tr>
+        <td class="rank-1">2</td>
+        <td><strong>SUDHAKAR</strong></td>
+        <td>240</td>
+        <td><strong style="color:#c0392b">605,173</strong></td>
+        <td>2,521</td>
+        <td>11.4%</td>
+        <td><span class="risk-badge risk-critical">CRITICAL</span></td>
+        <td>High volume + value — order booking audit required</td>
+      </tr>
+      <tr>
+        <td class="rank-1">3</td>
+        <td><strong>SHAMIL WEDASINGHE</strong></td>
+        <td>61</td>
+        <td><strong style="color:#c0392b">578,898</strong></td>
+        <td>9,490</td>
+        <td>11.0%</td>
+        <td><span class="risk-badge risk-critical">CRITICAL</span></td>
+        <td>Extremely high avg value — handling high-value accounts poorly</td>
+      </tr>
+      <tr>
+        <td class="rank-2">4</td>
+        <td>LEUMAS VETHAMUTHU</td>
+        <td>445</td>
+        <td>483,123</td>
+        <td>1,086</td>
+        <td>9.1%</td>
+        <td><span class="risk-badge risk-high">HIGH RISK</span></td>
+        <td>Highest volume salesman — training on confirmation process</td>
+      </tr>
+      <tr>
+        <td class="rank-2">5</td>
+        <td>KISHORE KUMAR</td>
+        <td>196</td>
+        <td>286,091</td>
+        <td>1,460</td>
+        <td>5.4%</td>
+        <td><span class="risk-badge risk-high">HIGH RISK</span></td>
+        <td>Consistent high value — account management review</td>
+      </tr>
+      <tr>
+        <td class="rank-3">6</td>
+        <td>GOPI</td>
+        <td>91</td>
+        <td>275,651</td>
+        <td>3,029</td>
+        <td>5.2%</td>
+        <td><span class="risk-badge risk-high">HIGH RISK</span></td>
+        <td>High avg per return — review Praslin hotel accounts</td>
+      </tr>
+      <tr>
+        <td class="rank-3">7</td>
+        <td>PANDIYARAJ</td>
+        <td>419</td>
+        <td>274,277</td>
+        <td>655</td>
+        <td>5.2%</td>
+        <td><span class="risk-badge risk-moderate">MODERATE</span></td>
+        <td>High volume, lower avg — focus on order confirmation</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>MOOVILARASAN</td>
+        <td>350</td>
+        <td>211,574</td>
+        <td>604</td>
+        <td>4.0%</td>
+        <td><span class="risk-badge risk-moderate">MODERATE</span></td>
+        <td>Monitor — volume trending up</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>GODWIN</td>
+        <td>186</td>
+        <td>205,003</td>
+        <td>1,102</td>
+        <td>3.9%</td>
+        <td><span class="risk-badge risk-moderate">MODERATE</span></td>
+        <td>Focus on customer confirmation process</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>RAJESH SELVARAJ</td>
+        <td>332</td>
+        <td>189,339</td>
+        <td>570</td>
+        <td>3.6%</td>
+        <td><span class="risk-badge risk-moderate">MODERATE</span></td>
+        <td>High volume — standardized order booking training</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Top 10 Salesman Return Value (SCR)</div>
+    <div class="chart-container" style="height:360px"><canvas id="salesmanChart" role="img" aria-label="Horizontal bar chart of top 10 salesman return values">KRISHNA 937993 SUDHAKAR 605173 SHAMIL 578898</canvas></div>
+  </div>
+
+  <div class="insight-box critical" style="margin-top:16px">
+    <div class="insight-title">🚨 Three salesmen = 40.1% of total financial loss</div>
+    <div class="insight-text">KRISHNA (SCR 937K), SUDHAKAR (SCR 605K), and SHAMIL WEDASINGHE (SCR 579K) together account for SCR 2.12M. KRISHNA and SHAMIL have exceptionally high average return values (SCR 8,766 and SCR 9,490 per line) — indicating they handle large-value accounts with poor demand confirmation. Immediate performance management intervention is required for all three.</div>
+  </div>
+</div>
+
+<!-- 8. REASON ANALYSIS / PARETO -->
+<div class="section" id="reason">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">Reason Analysis — Pareto (80/20)</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Rank</th><th>Reason Description</th><th>Count</th><th>Value (SCR)</th><th>% Value</th><th>Cumulative %</th><th>Root Cause</th></tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fff0f3">
+        <td class="rank-1">1</td>
+        <td><strong>Not Required / Cancelled By Customer</strong></td>
+        <td>1,587</td>
+        <td><strong>2,355,109</strong></td>
+        <td>44.5%</td>
+        <td>44.5%</td>
+        <td>No LPO/demand confirmation before delivery</td>
+      </tr>
+      <tr style="background:#fff5f0">
+        <td class="rank-2">2</td>
+        <td><strong>Wrong Order By The Sales Staff</strong></td>
+        <td>425</td>
+        <td><strong>656,063</strong></td>
+        <td>12.4%</td>
+        <td>56.9%</td>
+        <td>Salesman order entry errors; no validation checkpoint</td>
+      </tr>
+      <tr style="background:#fff5f0">
+        <td class="rank-2">3</td>
+        <td><strong>EDP Related Issues</strong></td>
+        <td>85</td>
+        <td><strong>638,538</strong></td>
+        <td>12.1%</td>
+        <td>69.0%</td>
+        <td>System processing errors; data entry failures in EDP</td>
+      </tr>
+      <tr style="background:#fffbf0">
+        <td class="rank-3">4</td>
+        <td><strong>Out of Scope - NMC</strong></td>
+        <td>726</td>
+        <td>375,854</td>
+        <td>7.1%</td>
+        <td>76.1%</td>
+        <td>Non-moving / out-of-range orders; range management failure</td>
+      </tr>
+      <tr style="background:#fffbf0">
+        <td class="rank-3">5</td>
+        <td><strong>Quality Issue</strong></td>
+        <td>74</td>
+        <td>212,550</td>
+        <td>4.0%</td>
+        <td>80.2%</td>
+        <td>Product quality complaints from customers</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Not required by customer (variant)</td>
+        <td>54</td>
+        <td>129,457</td>
+        <td>2.4%</td>
+        <td>82.6%</td>
+        <td>Duplicate coding of Reason #1 — data standardization needed</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Wrong Process by EDP</td>
+        <td>104</td>
+        <td>101,195</td>
+        <td>1.9%</td>
+        <td>84.5%</td>
+        <td>EDP process error (variant of Reason #3)</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Wrong Order Processed By EDP</td>
+        <td>90</td>
+        <td>94,289</td>
+        <td>1.8%</td>
+        <td>86.3%</td>
+        <td>EDP order processing errors (variant of Reason #3)</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Praslin Customer RTN</td>
+        <td>83</td>
+        <td>89,716</td>
+        <td>1.7%</td>
+        <td>88.0%</td>
+        <td>Praslin-specific logistics / demand timing issues</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Near Expiry Stocks</td>
+        <td>85</td>
+        <td>85,958</td>
+        <td>1.6%</td>
+        <td>89.6%</td>
+        <td>Inadequate FEFO rotation; slow demand planning</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Pareto Chart — Cumulative Value % by Reason</div>
+    <div class="chart-container" style="height:300px"><canvas id="paretoChart" role="img" aria-label="Pareto chart showing reason distribution and cumulative percentage">Customer Cancel 44.5% Wrong Order 12.4% EDP 12.1% Out of Scope 7.1% Quality 4.0%</canvas></div>
+  </div>
+
+  <div class="insight-box critical" style="margin-top:16px">
+    <div class="insight-title">⚡ PARETO FINDING — Just 5 reasons drive 80.2% of losses</div>
+    <div class="insight-text">This is a highly actionable Pareto profile. Fixing just 3 things — customer cancellation process, salesman order accuracy, and EDP processing controls — would eliminate 69% of return value. Note: Reasons 1, 6 ("Not required by customer") and Reasons 3, 7, 8 ("EDP issues") are duplicate codings that should be consolidated — actual EDP loss is ~16% and customer cancellation is ~47%.</div>
+  </div>
+</div>
+
+<!-- 9. BRAND ANALYSIS -->
+<div class="section" id="brand">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">Brand & SKU Analysis</div>
+  </div>
+
+  <div class="chart-row">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Top 12 Brands by Return Value (SCR)</div>
+      <div class="chart-container" style="height:300px"><canvas id="brandChart" role="img" aria-label="Bar chart of top brands by return value">LAR 543600 GOURMET CLAS 376304 WAGSTAFF 289463</canvas></div>
+    </div>
+    <div>
+      <table style="font-size:12px">
+        <thead>
+          <tr><th>Rank</th><th>Brand</th><th>Lines</th><th>Value (SCR)</th><th>Avg/Line</th><th>Risk</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rank-1">1</td><td><strong>LAR</strong></td><td>7</td><td>543,600</td><td>77,657</td><td><span class="risk-badge risk-critical">CRITICAL</span></td></tr>
+          <tr><td class="rank-2">2</td><td>GOURMET CLAS</td><td>201</td><td>376,304</td><td>1,872</td><td><span class="risk-badge risk-high">HIGH</span></td></tr>
+          <tr><td class="rank-2">3</td><td>WAGSTAFF</td><td>9</td><td>289,463</td><td>32,163</td><td><span class="risk-badge risk-critical">CRITICAL</span></td></tr>
+          <tr><td class="rank-3">4</td><td>PASCAL</td><td>581</td><td>272,410</td><td>469</td><td><span class="risk-badge risk-moderate">MODERATE</span></td></tr>
+          <tr><td class="rank-3">5</td><td>PENABRANCA</td><td>79</td><td>251,074</td><td>3,178</td><td><span class="risk-badge risk-high">HIGH</span></td></tr>
+          <tr><td>6</td><td>ANGLO</td><td>12</td><td>209,907</td><td>17,492</td><td><span class="risk-badge risk-high">HIGH</span></td></tr>
+          <tr><td>7</td><td>AL KABEER</td><td>300</td><td>200,580</td><td>669</td><td><span class="risk-badge risk-moderate">MODERATE</span></td></tr>
+          <tr><td>8</td><td>AMER.CLASSIC</td><td>241</td><td>191,005</td><td>793</td><td><span class="risk-badge risk-moderate">MODERATE</span></td></tr>
+          <tr><td>9</td><td>HOTPACK</td><td>200</td><td>177,463</td><td>887</td><td><span class="risk-badge risk-moderate">MODERATE</span></td></tr>
+          <tr><td>10</td><td>ANCHOR</td><td>8</td><td>155,703</td><td>19,463</td><td><span class="risk-badge risk-high">HIGH</span></td></tr>
+          <tr><td>11</td><td>PALATINA</td><td>27</td><td>154,405</td><td>5,719</td><td><span class="risk-badge risk-high">HIGH</span></td></tr>
+          <tr><td>12</td><td>MARA</td><td>177</td><td>140,444</td><td>794</td><td><span class="risk-badge risk-moderate">MODERATE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight-box critical" style="margin-top:16px">
+    <div class="insight-title">🥩 Frozen Protein Brands (LAR, WAGSTAFF, ANGLO, PENABRANCA) — SCR 1.29M exposure</div>
+    <div class="insight-text">LAR (avg SCR 77,657/line), WAGSTAFF (SCR 32,163/line), and ANGLO (SCR 17,492/line) have catastrophically high per-line values, typically involving bulk frozen meat orders for hotel and resort accounts. These high-value returns need mandatory pre-delivery LPO confirmation and dual-sign approval. PENABRANCA Chicken Whole 1000GMS alone accounts for SCR 198,755 in returns (16 lines).</div>
+  </div>
+
+  <div style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Top 10 Problematic SKUs</div>
+    <table style="font-size:12px">
+      <thead>
+        <tr><th>Rank</th><th>Item Name</th><th>Lines</th><th>Return Value (SCR)</th><th>Avg Stock Days</th><th>Primary Reason</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="rank-1">1</td><td>LAR CHICKEN LEG QUARTER LARGE FROZEN 15KG</td><td>7</td><td>543,600</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td class="rank-1">2</td><td>WAGSTAFF MUTTON LEG BONELESS FZ 25KG</td><td>9</td><td>289,463</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td class="rank-2">3</td><td>PENABRANCA CHICKEN WHOLE 1000GMS</td><td>16</td><td>198,755</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td class="rank-2">4</td><td>ANGLO BONELESS BEEF HEART OF RUMP 1KG</td><td>3</td><td>184,776</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td class="rank-3">5</td><td>PALATINA CHEDDAR CHEESE WHITE BLOCK</td><td>21</td><td>127,437</td><td>—</td><td>Quality / Near Expiry</td></tr>
+        <tr><td class="rank-3">6</td><td>ANCHOR UNSALTED BUTTER BLK 25KG</td><td>2</td><td>115,698</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td>7</td><td>HUNTER PREMIUM BEER 500ML</td><td>11</td><td>68,768</td><td>—</td><td>Out of scope / Damage</td></tr>
+        <tr><td>8</td><td>AURORA CHICKEN BREAST BLS 2KG</td><td>11</td><td>67,951</td><td>—</td><td>Customer cancellation</td></tr>
+        <tr><td>9</td><td>GOURMET CLASSIC SHRIMPS PD TAIL OFF 16/20</td><td>4</td><td>66,165</td><td>—</td><td>Quality issue</td></tr>
+        <tr><td>10</td><td>PASCUAL YOGIKIDS STRAWBERRY POUCH 80GM</td><td>73</td><td>64,633</td><td>—</td><td>Not required (high frequency)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 10. FINANCIAL IMPACT -->
+<div class="section" id="financial">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div class="section-title">Financial Impact Analysis</div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card danger">
+      <div class="kpi-label">Total Financial Loss</div>
+      <div class="kpi-value danger">SCR 5.29M</div>
+      <div class="kpi-sub">Jan–Apr 2026</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">Annualised Projection</div>
+      <div class="kpi-value" style="color:#d68910">SCR 15.86M</div>
+      <div class="kpi-sub">If trend continues</div>
+    </div>
+    <div class="kpi-card success">
+    <div class="kpi-label">Savings (25% reduction)</div>
+      <div class="kpi-value" style="color:#27ae60">SCR 1.32M</div>
+      <div class="kpi-sub">Top 3 reasons targeted</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-label">Savings (50% reduction)</div>
+      <div class="kpi-value" style="color:#27ae60">SCR 2.64M</div>
+      <div class="kpi-sub">Top 3 reasons targeted</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:12px">Savings Simulation — Top 3 Reasons</div>
+    <table>
+      <thead>
+        <tr><th>Reason</th><th>Current Loss (SCR)</th><th>25% Reduction Saves</th><th>50% Reduction Saves</th><th>75% Reduction Saves</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Customer Cancellation</strong></td>
+          <td>2,355,109</td>
+          <td style="color:#27ae60">588,777</td>
+          <td style="color:#27ae60">1,177,555</td>
+          <td style="color:#27ae60">1,766,332</td>
+        </tr>
+        <tr>
+          <td><strong>Wrong Order — Sales Staff</strong></td>
+          <td>656,063</td>
+          <td style="color:#27ae60">164,016</td>
+          <td style="color:#27ae60">328,032</td>
+          <td style="color:#27ae60">492,047</td>
+        </tr>
+        <tr>
+          <td><strong>EDP Related Issues</strong></td>
+          <td>638,538</td>
+          <td style="color:#27ae60">159,635</td>
+          <td style="color:#27ae60">319,269</td>
+          <td style="color:#27ae60">478,904</td>
+        </tr>
+        <tr style="background:#f0f4ff;font-weight:700">
+          <td><strong>TOTAL POTENTIAL SAVINGS</strong></td>
+          <td>3,649,710</td>
+          <td style="color:#1a73e8">912,428 (17.2%)</td>
+          <td style="color:#1a73e8">1,824,856 (34.5%)</td>
+          <td style="color:#1a73e8">2,737,283 (51.8%)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:20px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:10px">Loss by Month (SCR)</div>
+    <div class="chart-container" style="height:200px"><canvas id="financialChart" role="img" aria-label="Area chart of monthly financial loss trends Jan-Apr 2026">Jan 1025435 Feb 1163968 Mar 1754834 Apr 1342450</canvas></div>
+  </div>
+</div>
+
+<!-- 11. STOCK AGING -->
+<div class="section" id="aging">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div class="section-title">Stock Aging Analysis</div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card info">
+      <div class="kpi-label">Avg Stock Age</div>
+      <div class="kpi-value" style="color:#3498db">9.03 days</div>
+      <div class="kpi-sub">Mean days with customer</div>
+    </div>
+    <div class="kpi-card info">
+      <div class="kpi-label">Median Age</div>
+      <div class="kpi-value" style="color:#3498db">4.0 days</div>
+      <div class="kpi-sub">Heavily right-skewed</div>
+    </div>
+    <div class="kpi-card danger">
+      <div class="kpi-label">Max Aging</div>
+      <div class="kpi-value danger">368 days</div>
+      <div class="kpi-sub">Extreme outlier — investigate</div>
+    </div>
+    <div class="kpi-card warning">
+      <div class="kpi-label">60+ Day Returns</div>
+      <div class="kpi-value" style="color:#d68910">107 lines</div>
+      <div class="kpi-sub">2.6% of total — chronic aging</div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div style="font-size:13px;font-weight:700;color:#0f3460;margin-bottom:14px">Stock Age Distribution</div>
+    <div class="aging-bar">
+      <div class="aging-label">0–7 days</div>
+      <div class="aging-track"><div class="aging-fill fill-success" style="width:79.1%">79.1%</div></div>
+      <div class="aging-count">3,293</div>
+    </div>
+    <div class="aging-bar">
+      <div class="aging-label">8–15 days</div>
+      <div class="aging-track"><div class="aging-fill fill-info" style="width:10.5%">10.5%</div></div>
+      <div class="aging-count">439</div>
+    </div>
+    <div class="aging-bar">
+      <div class="aging-label">16–30 days</div>
+      <div class="aging-track"><div class="aging-fill fill-warning" style="width:4.1%">4.1%</div></div>
+      <div class="aging-count">171</div>
+    </div>
+    <div class="aging-bar">
+      <div class="aging-label">31–60 days</div>
+      <div class="aging-track"><div class="aging-fill fill-danger" style="width:3.5%">3.5%</div></div>
+      <div class="aging-count">147</div>
+    </div>
+    <div class="aging-bar">
+      <div class="aging-label">60+ days</div>
+      <div class="aging-track"><div class="aging-fill" style="width:2.6%;background:#7b0000">2.6%</div></div>
+      <div class="aging-count">107</div>
+    </div>
+  </div>
+
+  <div class="insight-box warning" style="margin-top:16px">
+    <div class="insight-title">⏱ 368-Day Outlier — Critical Investigation Required</div>
+    <div class="insight-text">A maximum aging of 368 days is almost certainly a data error or a forgotten consignment. Any stock aging beyond 90 days represents a write-off risk and potential expired product liability. The 107 lines with 60+ day aging (2.6%) should be investigated immediately for potential quality/expiry issues.</div>
+  </div>
+</div>
+
+<!-- 12. RISK MATRIX -->
+<div class="section" id="riskmatrix">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div class="section-title">Risk Matrix — Frequency vs Value</div>
+  </div>
+
+  <div class="risk-matrix">
+    <div class="risk-cell risk-hh">
+      <div class="risk-cell-title">🔴 HIGH Frequency + HIGH Value — CRITICAL ACTION</div>
+      <div class="risk-item">• Customer Cancellation (1,587 lines | SCR 2.35M)</div>
+      <div class="risk-item">• Out of Scope / NMC (726 lines | SCR 376K)</div>
+      <div class="risk-item">• Wrong Order — Sales Staff (425 lines | SCR 656K)</div>
+      <div class="risk-item">• LEUMAS Salesman (445 lines | SCR 483K)</div>
+      <div class="risk-item">• PASCAL Brand (581 lines | SCR 272K)</div>
+      <div class="risk-item">• MAH Location (3,816 lines | SCR 4.88M)</div>
+      <div style="margin-top:10px;font-size:11px;color:#c0392b;font-weight:700">IMMEDIATE INTERVENTION — Top management priority</div>
+    </div>
+    <div class="risk-cell risk-hl">
+      <div class="risk-cell-title">🟡 HIGH Frequency + LOW Value — PROCESS OPTIMIZATION</div>
+      <div class="risk-item">• Item Not Loaded Into Vehicle (231 lines | SCR 82K)</div>
+      <div class="risk-item">• Damaged Stocks (149 lines | SCR 67K)</div>
+      <div class="risk-item">• MOOVILARASAN Salesman (350 lines | SCR 212K)</div>
+      <div class="risk-item">• AL KABEER Brand (300 lines | SCR 201K)</div>
+      <div class="risk-item">• AMER.CLASSIC Brand (241 lines | SCR 191K)</div>
+      <div style="margin-top:10px;font-size:11px;color:#d68910;font-weight:700">PROCESS FIX — Loading checks; damage prevention protocols</div>
+    </div>
+    <div class="risk-cell risk-lh">
+      <div class="risk-cell-title">🟠 LOW Frequency + HIGH Value — STRATEGIC RISK</div>
+      <div class="risk-item">• LAR Brand (7 lines | SCR 543K)</div>
+      <div class="risk-item">• WAGSTAFF Brand (9 lines | SCR 289K)</div>
+      <div class="risk-item">• EDP Related Issues (85 lines | SCR 638K)</div>
+      <div class="risk-item">• KRISHNA (107 lines | SCR 938K avg SCR 8,766)</div>
+      <div class="risk-item">• ALPHONSE ISLAND customer (95 lines | SCR 931K)</div>
+      <div style="margin-top:10px;font-size:11px;color:#e67e22;font-weight:700">TARGETED CONTROLS — Dual approval; LPO mandatory for high-value</div>
+    </div>
+    <div class="risk-cell risk-ll">
+      <div class="risk-cell-title">🟢 LOW Frequency + LOW Value — MONITOR</div>
+      <div class="risk-item">• Near Expiry (85 lines | SCR 86K)</div>
+      <div class="risk-item">• Price Difference (84 lines | SCR 86K)</div>
+      <div class="risk-item">• Wrong Delivery by Driver (17 lines | SCR 30K)</div>
+      <div class="risk-item">• Short Quantity Delivered (18 lines | SCR 15K)</div>
+      <div class="risk-item">• LAD Location (134 lines | SCR 82K)</div>
+      <div style="margin-top:10px;font-size:11px;color:#27ae60;font-weight:700">ROUTINE MONITORING — Monthly review sufficient</div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. CONTROLS -->
+<div class="section" id="controls">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div class="section-title">Business Controls & Process Improvements</div>
+  </div>
+
+  <div class="rec-grid">
+    <div class="rec-card priority-1">
+      <div class="rec-priority">Priority 1 — Critical</div>
+      <div class="rec-title">Mandatory LPO / Demand Confirmation</div>
+      <div class="rec-desc">Problem: 44.5% of returns are customer cancellations post-delivery. Fix: Implement digital LPO confirmation 24 hours before delivery for all orders above SCR 1,000. Responsible: Sales Manager + IT. Steps: (1) Configure system block — no delivery note generated without LPO confirmation; (2) WhatsApp/SMS auto-confirmation to customer; (3) Salesman responsible for getting sign-off.</div>
+      <div class="rec-impact">Expected Impact: 30–40% reduction in customer cancellation returns = SCR 700K–940K saved annually</div>
+    </div>
+    <div class="rec-card priority-1">
+      <div class="rec-priority">Priority 1 — Critical</div>
+      <div class="rec-title">EDP Order Processing Controls</div>
+      <div class="rec-desc">Problem: EDP errors cost SCR 638K (12.1%). Fix: (1) Implement 4-eye validation for all EDP entries above SCR 5,000; (2) System-level duplicate order detection; (3) Real-time error rate dashboard for EDP supervisors; (4) Retraining for all EDP staff. Responsible: IT + Operations Manager.</div>
+      <div class="rec-impact">Expected Impact: 70% reduction in EDP errors = SCR 447K saved over 12 months</div>
+    </div>
+    <div class="rec-card priority-1">
+      <div class="rec-priority">Priority 1 — Critical</div>
+      <div class="rec-title">Salesman Order Booking Validation</div>
+      <div class="rec-desc">Problem: Wrong orders by sales staff = SCR 656K loss. Fix: (1) Mobile app order booking with product image confirmation; (2) Order value cap per customer per day without supervisor approval; (3) Real-time order history check before booking; (4) KRISHNA, SUDHAKAR, SHAMIL — supervised order booking for 90 days. Responsible: Sales Manager.</div>
+      <div class="rec-impact">Expected Impact: 50% reduction in sales staff errors = SCR 328K saved</div>
+    </div>
+    <div class="rec-card priority-1">
+      <div class="rec-priority">Priority 1 — Critical</div>
+      <div class="rec-title">High-Value Return Approval Workflow</div>
+      <div class="rec-desc">Problem: Returns above SCR 10,000/line processed without escalation (LAR SCR 77K/line, WAGSTAFF SCR 32K/line). Fix: (1) Any return above SCR 5,000 requires Sales Manager approval before processing; (2) Returns above SCR 25,000 require GM approval; (3) Automated alert system; (4) Photo evidence mandatory. Responsible: Sales Manager + Finance.</div>
+      <div class="rec-impact">Expected Impact: Reduces fraudulent/error returns; better financial controls</div>
+    </div>
+    <div class="rec-card priority-2">
+      <div class="rec-priority">Priority 2 — Important</div>
+      <div class="rec-title">FEFO Stock Rotation & Expiry Monitoring</div>
+      <div class="rec-desc">Problem: Near-expiry and expired stock returns (SCR 86K + SCR 74 lines expired). Fix: (1) Warehouse FEFO (First Expired, First Out) strictly enforced; (2) 30-day expiry alert for salesman territory; (3) Weekly near-expiry report with proactive return/transfer before expiry; (4) Driver checklist includes expiry date check before loading. Responsible: Warehouse + QC.</div>
+      <div class="rec-impact">Expected Impact: Eliminate expiry-related returns; potential SCR 100K+ savings + product liability reduction</div>
+    </div>
+    <div class="rec-card priority-2">
+      <div class="rec-priority">Priority 2 — Important</div>
+      <div class="rec-title">Demand Forecasting for Hotel & Resort Accounts</div>
+      <div class="rec-desc">Problem: Hotel accounts (ALPHONSE ISLAND, KEMPINSKI, SAVOY) drive SCR 1.3M+ in returns — driven by seasonal occupancy changes. Fix: (1) Monthly forecast meetings with top 10 hotel accounts; (2) Occupancy-linked order sizing model; (3) Flexible delivery schedule tied to check-in calendar; (4) Consignment model for high-risk protein items. Responsible: Key Account Manager.</div>
+      <div class="rec-impact">Expected Impact: 40% reduction in hotel-related returns = SCR 520K saved</div>
+    </div>
+    <div class="rec-card priority-2">
+      <div class="rec-priority">Priority 2 — Important</div>
+      <div class="rec-title">Reason Code Standardization & Mandatory Capture</div>
+      <div class="rec-desc">Problem: 127 returns have no reason code; multiple duplicate codes exist. Fix: (1) Consolidate reason codes to 15 standard codes; (2) System must require reason code before return approval; (3) Driver reason tagging on mobile at point of pickup; (4) Monthly reason code audit. Responsible: IT + Operations.</div>
+      <div class="rec-impact">Expected Impact: Cleaner data enables faster root-cause identification — operational value</div>
+    </div>
+    <div class="rec-card priority-3">
+      <div class="rec-priority">Priority 3 — Medium-Term</div>
+      <div class="rec-title">Salesman Incentive Redesign</div>
+      <div class="rec-desc">Problem: Return rate not factored into salesman incentives — creates moral hazard. Fix: (1) Net Sales (Gross – Returns) as primary KPI; (2) Monthly return value deducted from commission; (3) "Zero Return" achievement bonus; (4) Public performance dashboard visible to all team. Responsible: HR + Sales Manager.</div>
+      <div class="rec-impact">Expected Impact: Behavioral shift reduces preventable returns 20–30%</div>
+    </div>
+    <div class="rec-card priority-3">
+      <div class="rec-priority">Priority 3 — Medium-Term</div>
+      <div class="rec-title">Packaging & Damage Prevention</div>
+      <div class="rec-desc">Problem: 149 damage-related returns (SCR 67K). Fix: (1) Audit packaging for top 20 damage-prone SKUs; (2) Secondary protective packaging for glass/fragile items; (3) Vehicle loading training with photos; (4) Reject damaged stock at receiving before it reaches customers. Responsible: Warehouse + Logistics.</div>
+      <div class="rec-impact">Expected Impact: 60% reduction in damage returns = SCR 40K+ saved</div>
+    </div>
+    <div class="rec-card priority-3">
+      <div class="rec-priority">Priority 3 — Strategic</div>
+      <div class="rec-title">Real-Time Power BI Return Dashboard</div>
+      <div class="rec-desc">Problem: Management currently lacks live visibility into return trends. Fix: (1) Deploy Power BI connected to live ERP data; (2) Daily automated refresh; (3) Salesman, reason, brand drill-throughs; (4) Alert triggers when thresholds breached; (5) Mobile-accessible for field managers. Responsible: IT + Analytics Team.</div>
+      <div class="rec-impact">Expected Impact: Enables proactive management; 3–5 day faster corrective action cycle</div>
+    </div>
+  </div>
+</div>
+
+<!-- 14. POWER BI BLUEPRINT -->
+<div class="section" id="pbi">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div class="section-title">Power BI Dashboard Blueprint</div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 1 — Executive Summary</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="pbi-visual"><div class="pbi-icon">📊</div><div><div class="pbi-visual-name">KPI Card Strip</div><div class="pbi-visual-desc">Total Returns | Total Value | Avg Value | Monthly Growth % — with conditional formatting (red if above threshold)</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📈</div><div><div class="pbi-visual-name">Monthly Trend Combo</div><div class="pbi-visual-desc">Dual-axis: Bar (count) + Line (value) + 3-month moving average reference line</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📉</div><div><div class="pbi-visual-name">Pareto Chart</div><div class="pbi-visual-desc">Reason vs Value bars + cumulative % line — 80% threshold line; click to filter</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🧑</div><div><div class="pbi-visual-name">Top 10 Salesmen Table</div><div class="pbi-visual-desc">Rank | Name | Lines | Value | Risk Badge — with drill-through to Salesman page</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📍</div><div><div class="pbi-visual-name">Location Tile Map</div><div class="pbi-visual-desc">MAH / PRA / LAD — colored by value with bubble size = count</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🏷️</div><div><div class="pbi-visual-name">Brand Treemap</div><div class="pbi-visual-desc">Brand tiles sized by return value; color = risk level; click filters all visuals</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 2 — Salesman Performance Deep-Dive</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">🏆</div><div><div class="pbi-visual-name">Salesman Ranking Table</div><div class="pbi-visual-desc">Full list — Lines | Value | Avg | Risk Badge | MoM trend indicator — with conditional row formatting</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🌡️</div><div><div class="pbi-visual-name">Salesman × Month Heatmap</div><div class="pbi-visual-desc">Matrix: Salesman rows × Month columns, values = return count, color scale from green to red</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📈</div><div><div class="pbi-visual-name">Trend Lines — Top 5</div><div class="pbi-visual-desc">Line chart — Top 5 salesmen trend over months — identify accelerating vs improving</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🥧</div><div><div class="pbi-visual-name">Reason Mix per Salesman</div><div class="pbi-visual-desc">Stacked bar — selected salesman's returns broken down by reason type</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 3 — Reason Analysis</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">📉</div><div><div class="pbi-visual-name">Full Pareto Chart</div><div class="pbi-visual-desc">All reasons — bar + cumulative line — with 80% marker; click to drill into reason details</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🌊</div><div><div class="pbi-visual-name">Waterfall Chart</div><div class="pbi-visual-desc">Start from Total Value → breakdown by reason as negative impact bars</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📅</div><div><div class="pbi-visual-name">Reason × Month Matrix</div><div class="pbi-visual-desc">Show if specific reasons are getting worse month-over-month</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 4 — Location Analysis</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">🗺️</div><div><div class="pbi-visual-name">Map Visual</div><div class="pbi-visual-desc">Seychelles islands — bubble map; MAH/PRA/LAD with return value bubble size</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📊</div><div><div class="pbi-visual-name">Location Matrix Table</div><div class="pbi-visual-desc">Location × Month with values — spot Praslin seasonal patterns</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🔍</div><div><div class="pbi-visual-name">Location Drill-Through</div><div class="pbi-visual-desc">Select location → see top customers, salesmen, brands, reasons for that location</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 5 — Brand & SKU Analysis</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">🌳</div><div><div class="pbi-visual-name">Brand Treemap</div><div class="pbi-visual-desc">Tile size = return value; color = count; click to drill into SKU detail</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📋</div><div><div class="pbi-visual-name">Top 20 SKU Table</div><div class="pbi-visual-desc">Item | Brand | Lines | Value | Avg Stock Days | Primary Reason — sortable</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">🔠</div><div><div class="pbi-visual-name">Sellable vs Non-Sellable</div><div class="pbi-visual-desc">Donut per brand — Y vs N sellability — identifies write-off risk by brand</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📅</div><div><div class="pbi-visual-name">Brand Trend Lines</div><div class="pbi-visual-desc">Multi-line chart — top 8 brands — return value trend by month</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 6 — Financial Impact & Scenario Analysis</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">🌊</div><div><div class="pbi-visual-name">Financial Waterfall</div><div class="pbi-visual-desc">Monthly P&L impact — cumulative return value as waterfall</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">💰</div><div><div class="pbi-visual-name">Savings Simulator</div><div class="pbi-visual-desc">What-if slicer — adjust reduction % per reason → see projected savings in real time</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📊</div><div><div class="pbi-visual-name">Loss by Customer Table</div><div class="pbi-visual-desc">Top 20 customers by return value — with risk classification badges</div></div></div>
+    </div>
+  </div>
+
+  <div class="pbi-page">
+    <div class="pbi-page-title">Page 7 — Action Tracker</div>
+    <div class="pbi-visual-grid" style="grid-template-columns:1fr 1fr">
+      <div class="pbi-visual"><div class="pbi-icon">✅</div><div><div class="pbi-visual-name">Action Table</div><div class="pbi-visual-desc">Action | Owner | Deadline | Status | Priority | Expected Savings — color-coded by status</div></div></div>
+      <div class="pbi-visual"><div class="pbi-icon">📊</div><div><div class="pbi-visual-name">Progress KPIs</div><div class="pbi-visual-desc">% actions completed | Savings realized vs target | Open critical actions</div></div></div>
+    </div>
+  </div>
+
+  <div class="insight-box" style="margin-top:16px">
+    <div class="insight-title">🎨 Power BI Design Specifications</div>
+    <div class="insight-text"><strong>Color Palette:</strong> Primary #0F3460 (navy) | Alert #E94560 (red) | Warning #F5A623 (amber) | Safe #27AE60 (green) | Info #3498DB (blue) | Background #F0F2F5. <strong>Typography:</strong> Segoe UI throughout. <strong>Conditional Formatting:</strong> All value cells use traffic-light scale (green-amber-red). <strong>Drill-Through:</strong> Every visual → detail page for that entity. <strong>Bookmarks:</strong> Default view | By Value | By Volume | Critical Only. <strong>Navigation:</strong> Icon-based left sidebar with page buttons. <strong>Tooltips:</strong> All charts show detailed tooltip with full context on hover. <strong>Slicers:</strong> Month | City Code | Salesman | Brand | Txn Code — persistent across pages.</div>
+  </div>
+</div>
+
+<!-- 15. DAX MEASURES -->
+<div class="section" id="dax">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <div class="section-title">DAX Measures — Complete Library</div>
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">01 — Total Returns (Count)</div>
+    <span class="dax-keyword">Total Returns</span> = <span class="dax-func">COUNTROWS</span>(<span class="dax-string">'MAIN'</span>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">02 — Total Return Value</div>
+    <span class="dax-keyword">Total Return Value</span> = <span class="dax-func">SUM</span>(<span class="dax-string">'MAIN'[Returnvalue]</span>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">03 — Average Return Value</div>
+    <span class="dax-keyword">Avg Return Value</span> = <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;[Total Returns],<br>&nbsp;&nbsp;0<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">04 — Monthly Growth % (MoM)</div>
+    <span class="dax-keyword">Monthly Growth %</span> =<br>
+    <span class="dax-func">VAR</span> CurrentMonthValue = [Total Return Value]<br>
+    <span class="dax-func">VAR</span> PrevMonthValue = <span class="dax-func">CALCULATE</span>(<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;<span class="dax-func">DATEADD</span>('DateTable'[Date], -1, <span class="dax-string">MONTH</span>)<br>)<br>
+    <span class="dax-func">RETURN</span><br>
+    <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;CurrentMonthValue - PrevMonthValue,<br>&nbsp;&nbsp;PrevMonthValue,<br>&nbsp;&nbsp;0<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">05 — Return Value Share %</div>
+    <span class="dax-keyword">Return Share %</span> = <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;<span class="dax-func">CALCULATE</span>([Total Return Value], <span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'</span>)),<br>&nbsp;&nbsp;0<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">06 — Running Total (Cumulative Value)</div>
+    <span class="dax-keyword">Running Total Value</span> = <span class="dax-func">CALCULATE</span>(<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;<span class="dax-func">FILTER</span>(<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dax-func">ALLSELECTED</span>('DateTable'[Month]),<br>&nbsp;&nbsp;&nbsp;&nbsp;'DateTable'[Month] &lt;= <span class="dax-func">MAX</span>('DateTable'[Month])<br>&nbsp;&nbsp;)<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">07 — Salesman Rank by Return Value</div>
+    <span class="dax-keyword">Salesman Rank</span> = <span class="dax-func">RANKX</span>(<br>&nbsp;&nbsp;<span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Sm Name]</span>),<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;,<br>&nbsp;&nbsp;<span class="dax-func">DESC</span>,<br>&nbsp;&nbsp;<span class="dax-func">DENSE</span><br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">08 — Pareto Cumulative %</div>
+    <span class="dax-keyword">Pareto Cumulative %</span> =<br>
+    <span class="dax-func">VAR</span> CurrentReason = <span class="dax-func">SELECTEDVALUE</span>(<span class="dax-string">'MAIN'[Reason Desc]</span>)<br>
+    <span class="dax-func">VAR</span> CurrentValue = [Total Return Value]<br>
+    <span class="dax-func">VAR</span> AllReasonsTable = <span class="dax-func">ADDCOLUMNS</span>(<br>&nbsp;&nbsp;<span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Reason Desc]</span>),<br>&nbsp;&nbsp;<span class="dax-string">"ReasonValue"</span>, [Total Return Value]<br>)<br>
+    <span class="dax-func">VAR</span> GrandTotal = <span class="dax-func">CALCULATE</span>([Total Return Value], <span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Reason Desc]</span>))<br>
+    <span class="dax-func">VAR</span> CumulativeValue = <span class="dax-func">SUMX</span>(<br>&nbsp;&nbsp;<span class="dax-func">FILTER</span>(AllReasonsTable, [ReasonValue] &gt;= CurrentValue),<br>&nbsp;&nbsp;[ReasonValue]<br>)<br>
+    <span class="dax-func">RETURN</span> <span class="dax-func">DIVIDE</span>(CumulativeValue, GrandTotal, 0)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">09 — Salesman Risk Score (0–100)</div>
+    <span class="dax-keyword">SM Risk Score</span> =<br>
+    <span class="dax-func">VAR</span> ValueScore = <span class="dax-func">DIVIDE</span>([Total Return Value], <span class="dax-func">CALCULATE</span>([Total Return Value], <span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Sm Name]</span>))) * 60<br>
+    <span class="dax-func">VAR</span> VolScore = <span class="dax-func">DIVIDE</span>([Total Returns], <span class="dax-func">CALCULATE</span>([Total Returns], <span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Sm Name]</span>))) * 40<br>
+    <span class="dax-func">RETURN</span> <span class="dax-func">ROUND</span>((ValueScore + VolScore) * 100, 0)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">10 — Savings Simulation (adjustable %)</div>
+    <span class="dax-keyword">Savings Simulation</span> =<br>
+    <span class="dax-func">VAR</span> ReductionPct = <span class="dax-func">SELECTEDVALUE</span>('ReductionTable'[Pct], 0.25)<br>
+    <span class="dax-func">VAR</span> Top3Value = <span class="dax-func">CALCULATE</span>(<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;<span class="dax-func">TOPN</span>(3, <span class="dax-func">ALL</span>(<span class="dax-string">'MAIN'[Reason Desc]</span>), [Total Return Value], <span class="dax-func">DESC</span>)<br>)<br>
+    <span class="dax-func">RETURN</span> Top3Value * ReductionPct
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">11 — Non-Sellable Return % </div>
+    <span class="dax-keyword">Non-Sellable %</span> = <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;<span class="dax-func">CALCULATE</span>([Total Returns], <span class="dax-string">'MAIN'[Sellable]</span> = <span class="dax-string">"N"</span>),<br>&nbsp;&nbsp;[Total Returns],<br>&nbsp;&nbsp;0<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">12 — Average Stock Days with Customer</div>
+    <span class="dax-keyword">Avg Stock Days</span> = <span class="dax-func">AVERAGE</span>(<span class="dax-string">'MAIN'[Stk Days With Customer]</span>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">13 — 60+ Day Aging % (Risk Bucket)</div>
+    <span class="dax-keyword">60+ Day Aging %</span> = <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;<span class="dax-func">CALCULATE</span>([Total Returns], <span class="dax-string">'MAIN'[Stk Days With Customer]</span> &gt; 60),<br>&nbsp;&nbsp;[Total Returns],<br>&nbsp;&nbsp;0<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">14 — 3-Month Moving Average (Value)</div>
+    <span class="dax-keyword">3M Moving Avg Value</span> = <span class="dax-func">AVERAGEX</span>(<br>&nbsp;&nbsp;<span class="dax-func">DATESINPERIOD</span>('DateTable'[Date], <span class="dax-func">LASTDATE</span>('DateTable'[Date]), -3, <span class="dax-func">MONTH</span>),<br>&nbsp;&nbsp;<span class="dax-func">CALCULATE</span>([Total Return Value])<br>)
+  </div>
+
+  <div class="dax-block">
+    <div class="dax-name">15 — Customer Cancellation Share %</div>
+    <span class="dax-keyword">Cancellation %</span> = <span class="dax-func">DIVIDE</span>(<br>&nbsp;&nbsp;<span class="dax-func">CALCULATE</span>([Total Return Value], <span class="dax-string">'MAIN'[Reason]</span> = <span class="dax-string">"R024"</span>),<br>&nbsp;&nbsp;[Total Return Value],<br>&nbsp;&nbsp;0<br>)
+  </div>
+</div>
+
+<!-- 16. 30-60-90 DAY ROADMAP -->
+<div class="section" id="roadmap">
+  <div class="section-header">
+    <div class="section-num">16</div>
+    <div class="section-title">30–60–90 Day Implementation Roadmap</div>
+  </div>
+
+  <div class="roadmap-grid">
+    <div class="roadmap-card d30">
+      <div class="roadmap-title">🔴 DAYS 1–30: Stop the Bleeding</div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Immediate review meeting with KRISHNA, SUDHAKAR, SHAMIL WEDASINGHE — set performance improvement plans</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Implement mandatory LPO confirmation for orders SCR 1,000+ before delivery note generated</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Introduce dual-approval for all returns above SCR 5,000 — Sales Manager must sign</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Emergency EDP audit — identify and fix top 3 processing error patterns</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Investigate ALPHONSE ISLAND SCR 930K returns — account-specific action plan</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Standardize reason codes — consolidate 47 variants to 15 standard codes</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Deploy interim Excel dashboard for weekly management review</span></div>
+      <div style="margin-top:12px;padding:8px;background:rgba(192,57,43,0.1);border-radius:6px;font-size:11px;color:#c0392b;font-weight:700">Target: Halt monthly growth trend. Reduce April→May returns by 15%</div>
+    </div>
+
+    <div class="roadmap-card d60">
+      <div class="roadmap-title">🟡 DAYS 31–60: Fix the Systems</div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>System configuration: reason code mandatory field enforced in ERP</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>EDP retraining program — all staff certified on correct order processing procedures</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Salesman mobile app order booking with confirmation workflow deployed</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Barcode capture made mandatory at return receiving point</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>FEFO enforcement audit in warehouse — physical labeling and system alignment</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Hotel account demand planning meetings initiated for top 5 hotel customers</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Power BI dashboard Phase 1 deployed — Executive Summary and Salesman pages</span></div>
+      <div style="margin-top:12px;padding:8px;background:rgba(214,136,16,0.1);border-radius:6px;font-size:11px;color:#d68910;font-weight:700">Target: 25% reduction in return value vs January baseline</div>
+    </div>
+
+    <div class="roadmap-card d90">
+      <div class="roadmap-title">🔵 DAYS 61–90: Build for Sustainability</div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Salesman incentive scheme redesigned — net sales (after returns) as primary commission base</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Demand forecasting model implemented for top 50 SKUs across hotel accounts</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Near-expiry automated alert system active — 30-day and 14-day warnings to salesmen</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Full Power BI dashboard suite live — all 7 pages with live data connection</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Monthly QC governance meeting established — return KPI review on fixed agenda</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Packaging upgrade for top 10 damage-prone SKUs completed</span></div>
+      <div class="roadmap-item"><div class="roadmap-dot"></div><span>Q2 2026 full return analysis vs Q1 2026 — measure impact of all interventions</span></div>
+      <div style="margin-top:12px;padding:8px;background:rgba(26,115,232,0.1);border-radius:6px;font-size:11px;color:#1a73e8;font-weight:700">Target: 40% reduction in return value vs Jan baseline | Annual savings SCR 1.8M+</div>
+    </div>
+  </div>
+
+  <!-- Final insight -->
+  <div class="insight-box success" style="margin-top:20px">
+    <div class="insight-title">💡 STRATEGIC CONCLUSION — SCR 1.82M in annual savings is realistic</div>
+    <div class="insight-text">Based on this analysis, a disciplined 90-day intervention targeting the top 3 return reasons (customer cancellation, sales staff errors, EDP issues) can realistically achieve a 50% reduction — equivalent to SCR 1.82M in annualised savings. The Pareto concentration is favorable: 80% of losses come from 5 controllable reasons, and the top 3 are all process failures, not market conditions. This is within management's direct control. The key is speed of execution in Days 1–30.</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:24px;color:#888;font-size:11px;border-top:1px solid #e0e0e0;margin-top:8px">
+  Seychelles Distribution — Sales Return QC Analysis Report | Period: Jan–Apr 2026 | Prepared by: TAJENDER <br>
+  <strong style="color:#0f3460">Total Return Value: SCR 5,286,687 | 4,250 Transactions | 47 Reason Codes | 3 Locations | Multiple Salesmen Analysed</strong>
+</div>
+
+</div><!-- end wrapper -->
+
+<!-- CHART SCRIPTS -->
+<script>
+const navyBlue = '#0f3460';
+const red = '#e94560';
+const amber = '#f5a623';
+const green = '#27ae60';
+const blue = '#3498db';
+const grey = '#8a8a9a';
+
+// Chart 1: Monthly Volume
+new Chart(document.getElementById('monthVolumeChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026'],
+    datasets: [{
+      label: 'Return Lines',
+      data: [766, 1075, 1090, 1319],
+      backgroundColor: ['#3498db', '#f5a623', '#e94560', '#c0392b'],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.parsed.y.toLocaleString()} lines` } } },
+    scales: { y: { beginAtZero: true, ticks: { font: { size: 11 } } }, x: { ticks: { font: { size: 11 } } } }
+  }
+});
+
+// Chart 2: Monthly Value
+new Chart(document.getElementById('monthValueChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026'],
+    datasets: [{
+      label: 'Return Value (SCR)',
+      data: [1025435, 1163968, 1754834, 1342450],
+      backgroundColor: ['#3498db', '#f5a623', '#e94560', '#c0392b'],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `SCR ${ctx.parsed.y.toLocaleString()}` } } },
+    scales: { y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: v => 'SCR ' + (v/1000).toFixed(0) + 'K' } }, x: { ticks: { font: { size: 11 } } } }
+  }
+});
+
+// Chart 3: Txn by month (stacked)
+new Chart(document.getElementById('txnChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026'],
+    datasets: [
+      { label: 'SSR', data: [687, 955, 1010, 1231], backgroundColor: navyBlue, borderRadius: 4 },
+      { label: 'SPSSR', data: [48, 107, 64, 76], backgroundColor: amber, borderRadius: 4 },
+      { label: 'SSRV', data: [31, 13, 16, 12], backgroundColor: green, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {} },
+    scales: { x: { stacked: true, ticks: { font: { size: 10 } } }, y: { stacked: true, ticks: { font: { size: 10 } } } }
+  }
+});
+
+// Chart 4: Location donut
+new Chart(document.getElementById('locationChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['MAH (Mahé)', 'PRA (Praslin)', 'LAD (La Digue)'],
+    datasets: [{
+      data: [3816, 300, 134],
+      backgroundColor: [red, amber, green],
+      borderWidth: 2, borderColor: '#fff'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()} lines (${Math.round(ctx.parsed/4250*100)}%)` } } },
+    cutout: '60%'
+  }
+});
+
+// Chart 5: Salesman horizontal bar
+new Chart(document.getElementById('salesmanChart'), {
+  type: 'bar',
+  data: {
+    labels: ['KRISHNA', 'SUDHAKAR', 'SHAMIL W.', 'LEUMAS V.', 'KISHORE K.', 'GOPI', 'PANDIYARAJ', 'MOOVILARASAN', 'GODWIN', 'RAJESH S.'],
+    datasets: [{
+      label: 'Return Value (SCR)',
+      data: [937993, 605173, 578898, 483123, 286091, 275651, 274277, 211574, 205003, 189339],
+      backgroundColor: [red, red, red, '#f5a623', '#f5a623', '#f5a623', amber, grey, grey, grey],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `SCR ${ctx.parsed.x.toLocaleString()}` } } },
+    scales: { x: { ticks: { font: { size: 10 }, callback: v => 'SCR ' + (v/1000).toFixed(0) + 'K' } }, y: { ticks: { font: { size: 11 } } } }
+  }
+});
+
+// Chart 6: Pareto
+const paretoLabels = ['Customer Cancel', 'Wrong Order\n(Sales)', 'EDP Issues', 'Out of Scope', 'Quality Issue', 'Remaining'];
+const paretoValues = [2355109, 656063, 638538, 375854, 212550, 1048573];
+const total = paretoValues.reduce((a,b)=>a+b,0);
+let cum = 0;
+const cumPct = paretoValues.map(v => { cum += v; return Math.round(cum/total*100); });
+new Chart(document.getElementById('paretoChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Customer Cancel', 'Wrong Order (Sales)', 'EDP Issues', 'Out of Scope', 'Quality Issue', 'Others'],
+    datasets: [
+      { type: 'bar', label: 'Return Value (SCR)', data: paretoValues, backgroundColor: [red, '#f5a623', '#f5a623', amber, blue, grey], borderRadius: 4, yAxisID: 'y' },
+      { type: 'line', label: 'Cumulative %', data: cumPct, borderColor: navyBlue, backgroundColor: 'rgba(15,52,96,0.1)', fill: false, tension: 0.3, pointRadius: 5, yAxisID: 'y2' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {} },
+    scales: {
+      y: { beginAtZero: true, ticks: { font: { size: 10 }, callback: v => 'SCR ' + (v/1000).toFixed(0)+'K' } },
+      y2: { position: 'right', min: 0, max: 100, ticks: { font: { size: 10 }, callback: v => v + '%' }, grid: { drawOnChartArea: false } },
+      x: { ticks: { font: { size: 10 }, maxRotation: 30, autoSkip: false } }
+    }
+  }
+});
+
+// Chart 7: Brand bar
+new Chart(document.getElementById('brandChart'), {
+  type: 'bar',
+  data: {
+    labels: ['LAR', 'GOURMET CLAS', 'WAGSTAFF', 'PASCUAL', 'PENABRANCA', 'ANGLO', 'AL KABEER', 'AMER.CLASSIC', 'HOTPACK', 'ANCHOR', 'PALATINA', 'MARA'],
+    datasets: [{
+      label: 'Return Value (SCR)',
+      data: [543600, 376304, 289463, 272410, 251074, 209907, 200580, 191005, 177463, 155703, 154405, 140444],
+      backgroundColor: [red, red, red, amber, amber, amber, blue, blue, grey, grey, grey, grey],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `SCR ${ctx.parsed.y.toLocaleString()}` } } },
+    scales: { y: { ticks: { font: { size: 10 }, callback: v => 'SCR ' + (v/1000).toFixed(0)+'K' } }, x: { ticks: { font: { size: 9 }, maxRotation: 35, autoSkip: false } } }
+  }
+});
+
+// Chart 8: Financial area
+new Chart(document.getElementById('financialChart'), {
+  type: 'line',
+  data: {
+    labels: ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026'],
+    datasets: [{
+      label: 'Return Value (SCR)',
+      data: [1025435, 1163968, 1754834, 1342450],
+      borderColor: red, backgroundColor: 'rgba(233,69,96,0.12)', fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: red
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `SCR ${ctx.parsed.y.toLocaleString()}` } } },
+    scales: { y: { beginAtZero: false, ticks: { font: { size: 11 }, callback: v => 'SCR ' + (v/1000000).toFixed(2)+'M' } }, x: { ticks: { font: { size: 11 } } } }
+  }
+});
+</script>
+</body>
+</html>
